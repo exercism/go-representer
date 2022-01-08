@@ -1,9 +1,6 @@
 package representer
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/tehsphinx/astrav"
 )
 
@@ -16,62 +13,100 @@ const (
 )
 
 type node struct {
-	T        string `json:"0_t"`
-	PlHolder string `json:"1_plh,omitempty"`
-	Children []node `json:"7_ch"`
+	NodeType string `json:"0_ast_type"`
+	Name     string `json:"1_name,omitempty"`
+	GoType   string `json:"2_type,omitempty"`
+	Value    string `json:"3_value,omitempty"`
+	Children []node `json:"7_children,omitempty"`
 }
 
-func (s *Representation) buildNode(n astrav.Node) (node, skipType) {
+func (s *Representation) buildNode(n astrav.Node) (node, skipType, []astrav.Node) {
 	var rNode node
 	// add more node types to handle them specifically as needed
-	switch n.NodeType() {
+	children := n.Children()
+	switch nde := n.(type) {
 	default:
-		rNode = s.defaultNode(n)
-	case astrav.NodeTypeComment, astrav.NodeTypeCommentGroup:
+		rNode = s.defaultNode(n, true)
+	case *astrav.FuncDecl:
+		rNode = s.funcDecl(nde)
+		// continue with children of function block
+		children = n.ChildByNodeType(astrav.NodeTypeBlockStmt).Children()
+	case *astrav.CallExpr:
+		rNode, children = s.callExpr(nde)
+	case *astrav.Comment, *astrav.CommentGroup:
 		// ignore node and all children
-		return node{}, skipAll
-	case astrav.NodeTypeFile:
+		return node{}, skipAll, nil
+	case *astrav.File:
+		children = n.ChildNodes(func(n astrav.Node) bool { return !n.IsNodeType(astrav.NodeTypeIdent) })
 		// ignore node, process children
-		return node{}, skipNode
+		return node{}, skipNode, children
 	}
-	rNode = s.buildChildren(rNode, n)
-	return rNode, skipNone
+	rNode = s.appendChildren(rNode, children)
+	return rNode, skipNone, nil
 }
 
-func (s *Representation) buildChildren(rNode node, n astrav.Node) node {
-	for _, n := range n.Children() {
-		chNode, skip := s.buildNode(n)
+func (s *Representation) appendChildren(parent node, children []astrav.Node) node {
+	for _, n := range children {
+		chNode, skip, chs := s.buildNode(n)
 		switch skip {
 		case skipAll:
 			continue
 		case skipNode:
-			rNode = s.buildChildren(rNode, n)
+			parent = s.appendChildren(parent, chs)
 			continue
 		}
-		rNode.Children = append(rNode.Children, chNode)
+		parent.Children = append(parent.Children, chNode)
 	}
-	return rNode
+	return parent
 }
 
-func (s *Representation) defaultNode(n astrav.Node) node {
-	reprNode := node{T: formatNodeType(n.NodeType())}
+func (s *Representation) defaultNode(n astrav.Node, translateName bool) node {
+	reprNode := node{NodeType: formatNodeType(n.NodeType())}
 	if named, ok := n.(astrav.Named); ok {
-		reprNode.PlHolder = s.getPlaceHolder(named.NodeName())
+		name := named.NodeName()
+		if translateName {
+			name = s.getPlaceHolder(name)
+		}
+		reprNode.Name = name
 	}
+	if t := n.ValueType(); t != nil {
+		reprNode.GoType = t.String()
+	}
+
+	// simple node specifics. more complex ones get a switch case in buildNode method.
+	if nde, ok := n.(*astrav.BasicLit); ok {
+		reprNode.Value = nde.Value
+	}
+	if nde, ok := n.(*astrav.BinaryExpr); ok {
+		reprNode.Value = nde.Op.String()
+	}
+
 	return reprNode
 }
 
-func (s *Representation) getPlaceHolder(name string) string {
-	if plh, ok := s.mapping[name]; ok {
-		return plh
+func (s *Representation) funcDecl(n *astrav.FuncDecl) node {
+	reprNode := s.defaultNode(n, true)
+
+	funcType, ok := n.ChildByNodeType(astrav.NodeTypeFuncType).(*astrav.FuncType)
+	if !ok {
+		return reprNode
 	}
 
-	s.plhInc++
-	plh := "PLACEHOLDER_" + strconv.Itoa(s.plhInc)
-	s.mapping[name] = plh
-	return plh
+	s.replaceFieldNames(funcType.FindByNodeType(astrav.NodeTypeField))
+	reprNode.GoType = s.buildCode(funcType.FuncType)
+	return reprNode
 }
 
-func formatNodeType(t astrav.NodeType) string {
-	return strings.TrimPrefix(string(t), "*astrav.")
+func (s *Representation) callExpr(n *astrav.CallExpr) (node, []astrav.Node) {
+	reprNode := s.defaultNode(n, false)
+	if nde, ok := n.SelExpr().(*astrav.SelectorExpr); ok {
+		reprNode.Name = nde.NodeName()
+		if t := nde.ValueType(); t != nil {
+			reprNode.GoType = t.String()
+		}
+	}
+
+	// ignore ident children
+	children := n.ChildNodes(func(nde astrav.Node) bool { return nde != n.SelExpr() })
+	return reprNode, children
 }

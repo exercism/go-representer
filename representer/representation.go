@@ -3,6 +3,11 @@ package representer
 import (
 	"encoding/json"
 	"fmt"
+	"go/ast"
+	"go/printer"
+	"go/token"
+	"strconv"
+	"strings"
 
 	"github.com/tehsphinx/astrav"
 )
@@ -23,7 +28,7 @@ type Representation struct {
 
 // Process processes the solutions AST and extracts the representation.
 func (s *Representation) Process(pkg astrav.Node) {
-	s.represent, _ = s.buildNode(pkg)
+	s.represent, _, _ = s.buildNode(pkg)
 }
 
 // MappingBytes retrieves the correct mapping to be written to mapping.json.
@@ -50,6 +55,53 @@ func (s *Representation) RepresentationBytes() ([]byte, error) {
 	return bts, nil
 }
 
+func (s *Representation) replaceFieldNames(nodes []astrav.Node) {
+	for _, field := range nodes {
+		for _, name := range field.(*astrav.Field).Names {
+			plh := s.getPlaceHolder(name.Name)
+			name.Name = plh
+		}
+	}
+}
+
+func (s *Representation) getPlaceHolder(name string) string {
+	if isKeyword(name) {
+		return name
+	}
+	if plh, ok := s.mapping[name]; ok {
+		return plh
+	}
+
+	s.plhInc++
+	plh := "PLACEHOLDER_" + strconv.Itoa(s.plhInc)
+	s.mapping[name] = plh
+	return plh
+}
+
+func (s *Representation) buildCode(n ast.Node) string {
+	sb := &strings.Builder{}
+	err := printer.Fprint(sb, token.NewFileSet(), n)
+	if err != nil {
+		return ""
+	}
+	return sb.String()
+}
+
+func formatNodeType(t astrav.NodeType) string {
+	return strings.TrimPrefix(string(t), "*astrav.")
+}
+
 func toJSON(res interface{}) ([]byte, error) {
 	return json.MarshalIndent(res, "", "\t")
+}
+
+var keyWords = []string{"", "nil"}
+
+func isKeyword(name string) bool {
+	for _, word := range keyWords {
+		if name == word {
+			return true
+		}
+	}
+	return false
 }

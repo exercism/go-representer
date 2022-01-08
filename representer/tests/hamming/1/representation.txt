@@ -1,0 +1,238 @@
+{
+	"0_ast_type": "Package",
+	"1_name": "PLACEHOLDER_1",
+	"7_children": [
+		{
+			"0_ast_type": "GenDecl",
+			"7_children": [
+				{
+					"0_ast_type": "ImportSpec",
+					"7_children": [
+						{
+							"0_ast_type": "BasicLit",
+							"3_value": "\"errors\""
+						}
+					]
+				}
+			]
+		},
+		{
+			"0_ast_type": "FuncDecl",
+			"1_name": "PLACEHOLDER_2",
+			"2_type": "func(PLACEHOLDER_3, PLACEHOLDER_4 string) (int, error)",
+			"7_children": [
+				{
+					"0_ast_type": "IfStmt",
+					"7_children": [
+						{
+							"0_ast_type": "BinaryExpr",
+							"2_type": "untyped bool",
+							"3_value": "!=",
+							"7_children": [
+								{
+									"0_ast_type": "CallExpr",
+									"1_name": "len",
+									"2_type": "int",
+									"7_children": [
+										{
+											"0_ast_type": "Ident",
+											"1_name": "PLACEHOLDER_3",
+											"2_type": "string"
+										}
+									]
+								},
+								{
+									"0_ast_type": "CallExpr",
+									"1_name": "len",
+									"2_type": "int",
+									"7_children": [
+										{
+											"0_ast_type": "Ident",
+											"1_name": "PLACEHOLDER_4",
+											"2_type": "string"
+										}
+									]
+								}
+							]
+						},
+						{
+							"0_ast_type": "BlockStmt",
+							"7_children": [
+								{
+									"0_ast_type": "ReturnStmt",
+									"7_children": [
+										{
+											"0_ast_type": "BasicLit",
+											"2_type": "int",
+											"3_value": "0"
+										},
+										{
+											"0_ast_type": "CallExpr",
+											"1_name": "errors.New",
+											"2_type": "func(text string) error",
+											"7_children": [
+												{
+													"0_ast_type": "BasicLit",
+													"2_type": "string",
+													"3_value": "\"strings have different length\""
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"0_ast_type": "AssignStmt",
+					"7_children": [
+						{
+							"0_ast_type": "Ident",
+							"1_name": "PLACEHOLDER_5",
+							"2_type": "int"
+						},
+						{
+							"0_ast_type": "BasicLit",
+							"2_type": "int",
+							"3_value": "0"
+						}
+					]
+				},
+				{
+					"0_ast_type": "ForStmt",
+					"7_children": [
+						{
+							"0_ast_type": "AssignStmt",
+							"7_children": [
+								{
+									"0_ast_type": "Ident",
+									"1_name": "PLACEHOLDER_6",
+									"2_type": "int"
+								},
+								{
+									"0_ast_type": "BasicLit",
+									"2_type": "int",
+									"3_value": "0"
+								}
+							]
+						},
+						{
+							"0_ast_type": "BinaryExpr",
+							"2_type": "untyped bool",
+							"3_value": "\u003c",
+							"7_children": [
+								{
+									"0_ast_type": "Ident",
+									"1_name": "PLACEHOLDER_6",
+									"2_type": "int"
+								},
+								{
+									"0_ast_type": "CallExpr",
+									"1_name": "len",
+									"2_type": "int",
+									"7_children": [
+										{
+											"0_ast_type": "Ident",
+											"1_name": "PLACEHOLDER_3",
+											"2_type": "string"
+										}
+									]
+								}
+							]
+						},
+						{
+							"0_ast_type": "IncDecStmt",
+							"7_children": [
+								{
+									"0_ast_type": "Ident",
+									"1_name": "PLACEHOLDER_6",
+									"2_type": "int"
+								}
+							]
+						},
+						{
+							"0_ast_type": "BlockStmt",
+							"7_children": [
+								{
+									"0_ast_type": "IfStmt",
+									"7_children": [
+										{
+											"0_ast_type": "BinaryExpr",
+											"2_type": "untyped bool",
+											"3_value": "!=",
+											"7_children": [
+												{
+													"0_ast_type": "IndexExpr",
+													"2_type": "byte",
+													"7_children": [
+														{
+															"0_ast_type": "Ident",
+															"1_name": "PLACEHOLDER_3",
+															"2_type": "string"
+														},
+														{
+															"0_ast_type": "Ident",
+															"1_name": "PLACEHOLDER_6",
+															"2_type": "int"
+														}
+													]
+												},
+												{
+													"0_ast_type": "IndexExpr",
+													"2_type": "byte",
+													"7_children": [
+														{
+															"0_ast_type": "Ident",
+															"1_name": "PLACEHOLDER_4",
+															"2_type": "string"
+														},
+														{
+															"0_ast_type": "Ident",
+															"1_name": "PLACEHOLDER_6",
+															"2_type": "int"
+														}
+													]
+												}
+											]
+										},
+										{
+											"0_ast_type": "BlockStmt",
+											"7_children": [
+												{
+													"0_ast_type": "IncDecStmt",
+													"7_children": [
+														{
+															"0_ast_type": "Ident",
+															"1_name": "PLACEHOLDER_5",
+															"2_type": "int"
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"0_ast_type": "ReturnStmt",
+					"7_children": [
+						{
+							"0_ast_type": "Ident",
+							"1_name": "PLACEHOLDER_5",
+							"2_type": "int"
+						},
+						{
+							"0_ast_type": "Ident",
+							"1_name": "nil",
+							"2_type": "untyped nil"
+						}
+					]
+				}
+			]
+		}
+	]
+}

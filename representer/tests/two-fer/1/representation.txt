@@ -1,0 +1,89 @@
+{
+	"0_ast_type": "Package",
+	"1_name": "PLACEHOLDER_1",
+	"7_children": [
+		{
+			"0_ast_type": "FuncDecl",
+			"1_name": "PLACEHOLDER_2",
+			"2_type": "func(PLACEHOLDER_3 string) string",
+			"7_children": [
+				{
+					"0_ast_type": "IfStmt",
+					"7_children": [
+						{
+							"0_ast_type": "BinaryExpr",
+							"2_type": "untyped bool",
+							"3_value": "==",
+							"7_children": [
+								{
+									"0_ast_type": "Ident",
+									"1_name": "PLACEHOLDER_3",
+									"2_type": "string"
+								},
+								{
+									"0_ast_type": "BasicLit",
+									"2_type": "string",
+									"3_value": "\"\""
+								}
+							]
+						},
+						{
+							"0_ast_type": "BlockStmt",
+							"7_children": [
+								{
+									"0_ast_type": "AssignStmt",
+									"7_children": [
+										{
+											"0_ast_type": "Ident",
+											"1_name": "PLACEHOLDER_3",
+											"2_type": "string"
+										},
+										{
+											"0_ast_type": "BasicLit",
+											"2_type": "string",
+											"3_value": "\"you\""
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"0_ast_type": "ReturnStmt",
+					"7_children": [
+						{
+							"0_ast_type": "BinaryExpr",
+							"2_type": "string",
+							"3_value": "+",
+							"7_children": [
+								{
+									"0_ast_type": "BinaryExpr",
+									"2_type": "string",
+									"3_value": "+",
+									"7_children": [
+										{
+											"0_ast_type": "BasicLit",
+											"2_type": "string",
+											"3_value": "\"One for \""
+										},
+										{
+											"0_ast_type": "Ident",
+											"1_name": "PLACEHOLDER_3",
+											"2_type": "string"
+										}
+									]
+								},
+								{
+									"0_ast_type": "BasicLit",
+									"2_type": "string",
+									"3_value": "\", one for me.\""
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

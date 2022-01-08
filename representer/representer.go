@@ -3,7 +3,9 @@ package representer
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"path"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/tehsphinx/astrav"
@@ -14,6 +16,9 @@ func Extract(path string) (*Representation, error) {
 	pkg, err := LoadPackage(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse solution AST: %w", err)
+	}
+	if pkg == nil {
+		return nil, errors.New("no Go package found")
 	}
 
 	repr := NewRepresentation()
@@ -29,7 +34,9 @@ func LoadPackage(dir string) (*astrav.Package, error) {
 	}
 
 	folder := astrav.NewFolder(root, dir)
-	_, err := folder.ParseFolder()
+	_, err := folder.ParseFolder(func(info os.FileInfo) bool {
+		return !strings.HasSuffix(info.Name(), "_test.go") && info.Name() != "embed.go"
+	})
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
