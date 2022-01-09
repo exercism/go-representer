@@ -7,7 +7,7 @@ func PLACEHOLDER_1(PLACEHOLDER_2, PLACEHOLDER_3 string) (int, error) {
 		return 0, errors.New("strings have different length")
 	}
 	PLACEHOLDER_4 := 0
-	for PLACEHOLDER_5 := 0; PLACEHOLDER_5 < len(PLACEHOLDER_2); PLACEHOLDER_5++ {
+	for PLACEHOLDER_5 := range PLACEHOLDER_2 {
 		if PLACEHOLDER_2[PLACEHOLDER_5] != PLACEHOLDER_3[PLACEHOLDER_5] {
 			PLACEHOLDER_4++
 		}

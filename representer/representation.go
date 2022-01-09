@@ -6,29 +6,16 @@ import (
 	"go/ast"
 	"go/printer"
 	"go/token"
+	"path"
 	"strconv"
 	"strings"
-
-	"github.com/tehsphinx/astrav"
 )
 
-// NewRepresentation creates a new empty representation.
-func NewRepresentation() *Representation {
-	return &Representation{
-		mapping: map[string]string{},
-	}
-}
-
-// Representation contains all information of a representation for a solution.
-type Representation struct {
-	plhInc    int
-	mapping   map[string]string // key: variable name, value: placeholder name
-	represent node
-}
-
 // Process processes the solutions AST and extracts the representation.
-func (s *Representation) Process(pkg astrav.Node) {
-	s.represent, _, _ = s.buildNode(pkg)
+func (s *Representation) Process() {
+	pkg := s.Package()
+	s.normalize(pkg)
+	s.represent = pkg
 }
 
 // MappingBytes retrieves the correct mapping to be written to mapping.json.
@@ -48,24 +35,26 @@ func (s *Representation) MappingBytes() ([]byte, error) {
 
 // RepresentationBytes retrieves the bytes of the representation.
 func (s *Representation) RepresentationBytes() ([]byte, error) {
-	bts, err := toJSON(s.represent)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal representation: %w", err)
-	}
-	return bts, nil
-}
-
-func (s *Representation) replaceFieldNames(nodes []astrav.Node) {
-	for _, field := range nodes {
-		for _, name := range field.(*astrav.Field).Names {
-			plh := s.getPlaceHolder(name.Name)
-			name.Name = plh
+	var (
+		pkgCode    string
+		filesCount = len(s.represent.Files)
+	)
+	for _, file := range s.represent.Files {
+		if 1 < filesCount {
+			pkgCode += fmt.Sprintf("\n\n// ----- File: %s -----\n\n", file.Name.String())
 		}
+
+		code, err := s.buildCode(file)
+		if err != nil {
+			return nil, fmt.Errorf("failed to build representation: %w", err)
+		}
+		pkgCode += code
 	}
+	return []byte(pkgCode), nil
 }
 
 func (s *Representation) getPlaceHolder(name string) string {
-	if isKeyword(name) {
+	if isBuiltIn(name) {
 		return name
 	}
 	if plh, ok := s.mapping[name]; ok {
@@ -78,27 +67,57 @@ func (s *Representation) getPlaceHolder(name string) string {
 	return plh
 }
 
-func (s *Representation) buildCode(n ast.Node) string {
+func (s *Representation) buildCode(n ast.Node) (string, error) {
 	sb := &strings.Builder{}
 	err := printer.Fprint(sb, token.NewFileSet(), n)
 	if err != nil {
-		return ""
+		return "", fmt.Errorf("failed to build code: %w", err)
 	}
-	return sb.String()
+	return sb.String(), nil
 }
 
-func formatNodeType(t astrav.NodeType) string {
-	return strings.TrimPrefix(string(t), "*astrav.")
+func (s *Representation) collectImport(node ast.Node) {
+	n, ok := node.(*ast.ImportSpec)
+	if !ok {
+		return
+	}
+	name := n.Path.Value
+	name = strings.Trim(name, "\"")
+	if strings.Contains(name, "/") {
+		_, name = path.Split(name)
+	}
+	if n.Name != nil {
+		name = n.Name.Name
+	}
+	s.importNames = append(s.importNames, name)
+}
+
+func (s *Representation) isImport(name string) bool {
+	for _, importName := range s.importNames {
+		if importName == name {
+			return true
+		}
+	}
+	return false
 }
 
 func toJSON(res interface{}) ([]byte, error) {
 	return json.MarshalIndent(res, "", "\t")
 }
 
-var keyWords = []string{"", "nil"}
+var builtIn = []string{"", "_", "nil",
+	// constants
+	"true", "false", "iota",
+	// functions
+	"append", "cap", "close", "complex", "copy", "delete", "imag", "len", "make", "new", "panic", "print", "println", "real", "recover",
+	// types
+	"bool", "byte", "complex64", "complex128", "error", "float32", "float64",
+	"int", "int8", "int16", "int32", "int64", "rune", "string",
+	"uint", "uint8", "uint16", "uint32", "uint64", "uintptr",
+}
 
-func isKeyword(name string) bool {
-	for _, word := range keyWords {
+func isBuiltIn(name string) bool {
+	for _, word := range builtIn {
 		if name == word {
 			return true
 		}

@@ -88,7 +88,7 @@ func writeOutput(opts options, representation []byte, mapping []byte) error {
 }
 
 func writeFile(filePath string, bytes []byte) error {
-	if err := ioutil.WriteFile(filePath, append(bytes, '\n'), 0644); err != nil {
+	if err := ioutil.WriteFile(filePath, bytes, 0644); err != nil {
 		return fmt.Errorf("error writing to file: %w", err)
 	}
 	log.Printf("Written to %s", filePath)

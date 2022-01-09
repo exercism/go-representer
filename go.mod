@@ -8,6 +8,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/stretchr/testify v1.3.0
 	github.com/tehsphinx/astrav v0.4.2
+	golang.org/x/tools v0.1.8
 )
 
 require (

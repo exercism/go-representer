@@ -1,24 +1,29 @@
 package raindrops
 
-import "strconv"
-
-var speech = map[int]string{
-	3: "Pling",
-	5: "Plang",
-	7: "Plong",
-}
+import (
+	"strconv"
+)
 
 // Convert implements raindrop speech
-func Convert(value int) string {
+func Convert(i int) string {
 	var res string
-	for i := 3; i <= 7; i += 2 {
-		if value%i == 0 {
-			res += speech[i]
-		}
+	if hasFactor(i, 3) {
+		res += "Pling"
+	}
+	if hasFactor(i, 5) {
+		res += "Plang"
+	}
+	if hasFactor(i, 7) {
+		res += "Plong"
 	}
 
 	if res == "" {
-		res = strconv.Itoa(value)
+		return strconv.Itoa(i)
 	}
+
 	return res
+}
+
+func hasFactor(n, f int) bool {
+	return n%f == 0
 }

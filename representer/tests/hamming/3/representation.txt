@@ -1,0 +1,22 @@
+package hamming
+
+import (
+	"errors"
+)
+
+func PLACEHOLDER_1(PLACEHOLDER_2, PLACEHOLDER_3 string) (int, error) {
+	var (
+		PLACEHOLDER_4	= []rune(PLACEHOLDER_2)
+		PLACEHOLDER_5	= []rune(PLACEHOLDER_3)
+	)
+	if len(PLACEHOLDER_4) != len(PLACEHOLDER_5) {
+		return 0, errors.New("mismatch length strings not accepted")
+	}
+	PLACEHOLDER_6 := 0
+	for PLACEHOLDER_7, PLACEHOLDER_8 := range PLACEHOLDER_4 {
+		if PLACEHOLDER_8 != PLACEHOLDER_5[PLACEHOLDER_7] {
+			PLACEHOLDER_6++
+		}
+	}
+	return PLACEHOLDER_6, nil
+}

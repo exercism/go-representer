@@ -3,42 +3,37 @@ package representer
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"path"
-	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/tehsphinx/astrav"
 )
 
 // Extract extracts the Representation from a given solution folder.
 func Extract(path string) (*Representation, error) {
-	pkg, err := LoadPackage(path)
+	repr, err := GetRepresentation(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse solution AST: %w", err)
 	}
-	if pkg == nil {
-		return nil, errors.New("no Go package found")
-	}
-
-	repr := NewRepresentation()
-	repr.Process(pkg)
 	return repr, nil
 }
 
-// LoadPackage loads a go package from a folder
-func LoadPackage(dir string) (*astrav.Package, error) {
+// GetRepresentation loads a go package from a folder
+func GetRepresentation(dir string) (*Representation, error) {
 	root := http.Dir(".")
 	if path.IsAbs(dir) {
 		root = "/"
 	}
 
-	folder := astrav.NewFolder(root, dir)
-	_, err := folder.ParseFolder(func(info os.FileInfo) bool {
-		return !strings.HasSuffix(info.Name(), "_test.go") && info.Name() != "embed.go"
-	})
+	repr := NewRepresentation(root, dir)
+	_, err := repr.ParseFolder()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return folder.Package(folder.Pkg.Name()), nil
+	if repr.Package() == nil {
+		return nil, errors.New("no Go package found")
+	}
+
+	repr.Process()
+
+	return repr, nil
 }
