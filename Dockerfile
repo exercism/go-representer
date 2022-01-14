@@ -13,9 +13,9 @@ COPY ./go.mod /go-representer/go.mod
 # download dependencies
 RUN go mod download
 
-# Create represent.sh
-RUN printf '%s\n' '#!/bin/sh' '/opt/representer/bin/representer "$@"' > /go/bin/represent.sh
-RUN chmod +x /go/bin/represent.sh
+# Create run.sh
+RUN printf '%s\n' '#!/bin/sh' '/opt/representer/bin/representer "$@"' > /go/bin/run.sh
+RUN chmod +x /go/bin/run.sh
 
 # get the rest of the source code
 COPY . /go-representer
@@ -33,4 +33,4 @@ COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /go/bin /opt/representer/bin
 USER appuser
 WORKDIR /opt/representer
-ENTRYPOINT ["/opt/representer/bin/represent.sh"]
+ENTRYPOINT ["/opt/representer/bin/run.sh"]
