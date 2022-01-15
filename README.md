@@ -3,6 +3,13 @@ This is Exercism's representer for the Go track. See the
 [docs](https://exercism.org/docs/building/tooling/representers) for more
 information on representers.
 
+## Build Executable
+This will create an executable called `represent`.
+
+```
+go build -tags build -o represent .
+```
+
 ## Executing the Representer
 The representer takes three arguments:
 
@@ -13,12 +20,11 @@ The representer takes three arguments:
 The representer will write a `representation.txt` and `mapping.json`
 file to the output directory.
 
-## Build Executable
-This will create an executable called `represent`.
-
+With the binary built above:
 ```
-go build -tags build -o represent .
+represent two-fer ./representer/testdata/two-fer/1/ ./
 ```
 
 ## Current State
-Not implemented
+
+Basic representer implemented.
