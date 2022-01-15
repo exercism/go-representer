@@ -7,7 +7,10 @@ import (
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-func (s *Representation) normalize(pkg *ast.Package) {
+func (s *Representation) normalize(pkg *ast.Package) *ast.Package {
+	f := ast.MergePackageFiles(pkg, ast.FilterImportDuplicates+ast.FilterUnassociatedComments)
+	pkg.Files = map[string]*ast.File{defaultFileName: f}
+
 	astutil.Apply(pkg, func(cursor *astutil.Cursor) bool {
 		node := cursor.Node()
 		if node == nil {
@@ -18,6 +21,7 @@ func (s *Representation) normalize(pkg *ast.Package) {
 		s.rename(node, cursor)
 		return true
 	}, nil)
+	return pkg
 }
 
 func (s *Representation) rename(node ast.Node, cursor *astutil.Cursor) {

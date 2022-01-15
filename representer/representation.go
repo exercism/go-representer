@@ -14,7 +14,7 @@ import (
 // Process processes the solutions AST and extracts the representation.
 func (s *Representation) Process() {
 	pkg := s.Package()
-	s.normalize(pkg)
+	pkg = s.normalize(pkg)
 	s.represent = pkg
 }
 
@@ -35,22 +35,12 @@ func (s *Representation) MappingBytes() ([]byte, error) {
 
 // RepresentationBytes retrieves the bytes of the representation.
 func (s *Representation) RepresentationBytes() ([]byte, error) {
-	var (
-		pkgCode    string
-		filesCount = len(s.represent.Files)
-	)
-	for _, file := range s.represent.Files {
-		if 1 < filesCount {
-			pkgCode += fmt.Sprintf("\n\n// ----- File: %s -----\n\n", file.Name.String())
-		}
-
-		code, err := s.buildCode(file)
-		if err != nil {
-			return nil, fmt.Errorf("failed to build representation: %w", err)
-		}
-		pkgCode += code
+	code, err := s.buildCode(s.represent.Files[defaultFileName])
+	if err != nil {
+		return nil, fmt.Errorf("failed to build representation: %w", err)
 	}
-	return []byte(pkgCode), nil
+
+	return []byte(code), nil
 }
 
 func (s *Representation) getPlaceHolder(name string) string {
@@ -68,8 +58,12 @@ func (s *Representation) getPlaceHolder(name string) string {
 }
 
 func (s *Representation) buildCode(n ast.Node) (string, error) {
-	sb := &strings.Builder{}
-	err := printer.Fprint(sb, token.NewFileSet(), n)
+	var (
+		sb = &strings.Builder{}
+		fs = token.NewFileSet()
+	)
+	// make sure to use new fileset here to lose positions, e.g. extra whitespace
+	err := printer.Fprint(sb, fs, n)
 	if err != nil {
 		return "", fmt.Errorf("failed to build code: %w", err)
 	}

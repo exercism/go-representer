@@ -14,6 +14,8 @@ import (
 	"github.com/tehsphinx/astrav"
 )
 
+const defaultFileName = "solution.go"
+
 // NewRepresentation creates a new folder with given path. Use ParseFolder to parse ast from go files in path.
 // The pkgPath is the import path of the package to be used by types.ParseInfo.
 func NewRepresentation(root http.FileSystem, dir string) *Representation {

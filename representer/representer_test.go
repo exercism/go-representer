@@ -14,6 +14,7 @@ import (
 	raindrops3 "github.com/exercism/go-representer/representer/testdata/raindrops/3"
 	raindrops4 "github.com/exercism/go-representer/representer/testdata/raindrops/4"
 	raindrops5 "github.com/exercism/go-representer/representer/testdata/raindrops/5"
+	raindrops6 "github.com/exercism/go-representer/representer/testdata/raindrops/6"
 	twofer1 "github.com/exercism/go-representer/representer/testdata/two-fer/1"
 	twofer2 "github.com/exercism/go-representer/representer/testdata/two-fer/2"
 	"github.com/matryer/is"
@@ -80,6 +81,11 @@ func TestExtract(t *testing.T) {
 			path:        "testdata/raindrops/5",
 			wantRepr:    raindrops5.Representation,
 			wantMapping: raindrops5.Mapping,
+		},
+		{
+			path:        "testdata/raindrops/6",
+			wantRepr:    raindrops6.Representation,
+			wantMapping: raindrops6.Mapping,
 		},
 	}
 	for _, tt := range tests {
