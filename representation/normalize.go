@@ -1,11 +1,24 @@
-package representer
+package representation
 
 import (
 	"go/ast"
 	"go/types"
 
+	"github.com/pkg/errors"
 	"golang.org/x/tools/go/ast/astutil"
 )
+
+// Normalize processes the solutions AST to normalize the representation.
+func (s *Representation) Normalize() error {
+	pkg := s.getPackage()
+	if pkg == nil {
+		return errors.New("no Go package found")
+	}
+
+	pkg = s.normalize(pkg)
+	s.represent = pkg
+	return nil
+}
 
 func (s *Representation) normalize(pkg *ast.Package) *ast.Package {
 	f := ast.MergePackageFiles(pkg, ast.FilterImportDuplicates+ast.FilterUnassociatedComments)

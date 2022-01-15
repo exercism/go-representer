@@ -1,4 +1,4 @@
-package representer
+package representation
 
 import (
 	"encoding/json"
@@ -6,17 +6,8 @@ import (
 	"go/ast"
 	"go/printer"
 	"go/token"
-	"path"
-	"strconv"
 	"strings"
 )
-
-// Process processes the solutions AST and extracts the representation.
-func (s *Representation) Process() {
-	pkg := s.Package()
-	pkg = s.normalize(pkg)
-	s.represent = pkg
-}
 
 // MappingBytes retrieves the correct mapping to be written to mapping.json.
 func (s *Representation) MappingBytes() ([]byte, error) {
@@ -43,20 +34,6 @@ func (s *Representation) RepresentationBytes() ([]byte, error) {
 	return []byte(code), nil
 }
 
-func (s *Representation) getPlaceHolder(name string) string {
-	if isBuiltIn(name) {
-		return name
-	}
-	if plh, ok := s.mapping[name]; ok {
-		return plh
-	}
-
-	s.plhInc++
-	plh := "PLACEHOLDER_" + strconv.Itoa(s.plhInc)
-	s.mapping[name] = plh
-	return plh
-}
-
 func (s *Representation) buildCode(n ast.Node) (string, error) {
 	var (
 		sb = &strings.Builder{}
@@ -68,31 +45,6 @@ func (s *Representation) buildCode(n ast.Node) (string, error) {
 		return "", fmt.Errorf("failed to build code: %w", err)
 	}
 	return sb.String(), nil
-}
-
-func (s *Representation) collectImport(node ast.Node) {
-	n, ok := node.(*ast.ImportSpec)
-	if !ok {
-		return
-	}
-	name := n.Path.Value
-	name = strings.Trim(name, "\"")
-	if strings.Contains(name, "/") {
-		_, name = path.Split(name)
-	}
-	if n.Name != nil {
-		name = n.Name.Name
-	}
-	s.importNames = append(s.importNames, name)
-}
-
-func (s *Representation) isImport(name string) bool {
-	for _, importName := range s.importNames {
-		if importName == name {
-			return true
-		}
-	}
-	return false
 }
 
 func toJSON(res interface{}) ([]byte, error) {

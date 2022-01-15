@@ -1,22 +1,21 @@
-package representer_test
+package representer
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/exercism/go-representer/representer"
-	hamming1 "github.com/exercism/go-representer/representer/testdata/hamming/1"
-	hamming2 "github.com/exercism/go-representer/representer/testdata/hamming/2"
-	hamming3 "github.com/exercism/go-representer/representer/testdata/hamming/3"
-	hamming4 "github.com/exercism/go-representer/representer/testdata/hamming/4"
-	raindrops1 "github.com/exercism/go-representer/representer/testdata/raindrops/1"
-	raindrops2 "github.com/exercism/go-representer/representer/testdata/raindrops/2"
-	raindrops3 "github.com/exercism/go-representer/representer/testdata/raindrops/3"
-	raindrops4 "github.com/exercism/go-representer/representer/testdata/raindrops/4"
-	raindrops5 "github.com/exercism/go-representer/representer/testdata/raindrops/5"
-	raindrops6 "github.com/exercism/go-representer/representer/testdata/raindrops/6"
-	twofer1 "github.com/exercism/go-representer/representer/testdata/two-fer/1"
-	twofer2 "github.com/exercism/go-representer/representer/testdata/two-fer/2"
+	hamming1 "github.com/exercism/go-representer/testdata/hamming/1"
+	hamming2 "github.com/exercism/go-representer/testdata/hamming/2"
+	hamming3 "github.com/exercism/go-representer/testdata/hamming/3"
+	hamming4 "github.com/exercism/go-representer/testdata/hamming/4"
+	raindrops1 "github.com/exercism/go-representer/testdata/raindrops/1"
+	raindrops2 "github.com/exercism/go-representer/testdata/raindrops/2"
+	raindrops3 "github.com/exercism/go-representer/testdata/raindrops/3"
+	raindrops4 "github.com/exercism/go-representer/testdata/raindrops/4"
+	raindrops5 "github.com/exercism/go-representer/testdata/raindrops/5"
+	raindrops6 "github.com/exercism/go-representer/testdata/raindrops/6"
+	twofer1 "github.com/exercism/go-representer/testdata/two-fer/1"
+	twofer2 "github.com/exercism/go-representer/testdata/two-fer/2"
 	"github.com/matryer/is"
 	"github.com/stretchr/testify/assert"
 )
@@ -91,15 +90,10 @@ func TestExtract(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(strings.TrimPrefix(tt.path, "testdata/"), func(t *testing.T) {
 			asrt := is.New(t)
-			got, err := representer.Extract(tt.path)
+			repr, mapping, err := Extract(tt.path)
 			asrt.NoErr(err)
 
-			repr, err := got.RepresentationBytes()
-			asrt.NoErr(err)
 			assert.Equal(t, string(tt.wantRepr), string(repr))
-
-			mapping, err := got.MappingBytes()
-			asrt.NoErr(err)
 			assert.Equal(t, string(tt.wantMapping), string(mapping))
 		})
 	}

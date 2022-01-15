@@ -22,7 +22,7 @@ COPY . /go-representer
 
 # build
 RUN go generate .
-RUN GOOS=linux GOARCH=amd64 go build --tags=build -o /go/bin/representer .
+RUN GOOS=linux GOARCH=amd64 go build --tags=build -o /go/bin/representer ./cmd/representer
 
 # Build a minimal and secured container
 # The ast parser needs Go installed for import statements.
