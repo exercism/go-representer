@@ -1,13 +1,29 @@
-package representer
+package representation
 
 import (
 	"go/ast"
 	"go/types"
 
+	"github.com/pkg/errors"
 	"golang.org/x/tools/go/ast/astutil"
 )
 
-func (s *Representation) normalize(pkg *ast.Package) {
+// Normalize processes the solutions AST to normalize the representation.
+func (s *Representation) Normalize() error {
+	pkg := s.getPackage()
+	if pkg == nil {
+		return errors.New("no Go package found")
+	}
+
+	pkg = s.normalize(pkg)
+	s.represent = pkg
+	return nil
+}
+
+func (s *Representation) normalize(pkg *ast.Package) *ast.Package {
+	f := ast.MergePackageFiles(pkg, ast.FilterImportDuplicates+ast.FilterUnassociatedComments)
+	pkg.Files = map[string]*ast.File{defaultFileName: f}
+
 	astutil.Apply(pkg, func(cursor *astutil.Cursor) bool {
 		node := cursor.Node()
 		if node == nil {
@@ -18,6 +34,7 @@ func (s *Representation) normalize(pkg *ast.Package) {
 		s.rename(node, cursor)
 		return true
 	}, nil)
+	return pkg
 }
 
 func (s *Representation) rename(node ast.Node, cursor *astutil.Cursor) {

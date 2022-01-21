@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/exercism/go-representer/representer"
+	"github.com/exercism/go-representer"
 	"github.com/namsral/flag"
 )
 
@@ -57,18 +57,9 @@ func main() {
 func run(opts options) error {
 	log.Printf("Creating representation for `%s` exercise in folder `%s`\n", opts.exercise, opts.solutionPath)
 
-	repr, err := representer.Extract(opts.solutionPath)
+	reprBts, mappingBts, err := representer.Extract(opts.solutionPath)
 	if err != nil {
-		return fmt.Errorf("failed to extract representation: %w", err)
-	}
-
-	reprBts, err := repr.RepresentationBytes()
-	if err != nil {
-		return fmt.Errorf("failed to serialize representation: %w", err)
-	}
-	mappingBts, err := repr.MappingBytes()
-	if err != nil {
-		return fmt.Errorf("failed to serialize representation: %w", err)
+		return err
 	}
 
 	return writeOutput(opts, reprBts, mappingBts)

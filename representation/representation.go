@@ -1,4 +1,4 @@
-package representer
+package representation
 
 import (
 	"go/ast"
@@ -8,20 +8,28 @@ import (
 	"go/types"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/tehsphinx/astrav"
 )
 
-// NewRepresentation creates a new folder with given path. Use ParseFolder to parse ast from go files in path.
-// The pkgPath is the import path of the package to be used by types.ParseInfo.
-func NewRepresentation(root http.FileSystem, dir string) *Representation {
+const defaultFileName = "solution.go"
+
+// NewRepresentation creates a new folder with given path. Use ParseAST to parse ast from go files in path.
+// The pkgPath is the import path of the package to be used by types.parseInfo.
+func NewRepresentation(dir string) *Representation {
+	root := http.Dir(".")
+	if path.IsAbs(dir) {
+		root = "/"
+	}
+
 	return &Representation{
 		dir:  dir,
 		root: root,
-		FSet: token.NewFileSet(),
-		Pkgs: map[string]*ast.Package{},
+		fSet: token.NewFileSet(),
+		pkgs: map[string]*ast.Package{},
 
 		mapping: map[string]string{},
 	}
@@ -32,10 +40,10 @@ type Representation struct {
 	dir  string
 	root http.FileSystem
 
-	Info *types.Info
-	FSet *token.FileSet
-	Pkgs map[string]*ast.Package
-	Pkg  *types.Package
+	info     *types.Info
+	fSet     *token.FileSet
+	pkgs     map[string]*ast.Package
+	typesPkg *types.Package
 
 	plhInc      int
 	mapping     map[string]string // key: variable name, value: placeholder name
@@ -43,9 +51,9 @@ type Representation struct {
 	importNames []string
 }
 
-// ParseFolder will parse all to files in folder. It skips test files.
-func (s *Representation) ParseFolder() (map[string]*ast.Package, error) {
-	pkgs, _, err := astrav.Parse(s.FSet, s.root, s.dir, func(info os.FileInfo) bool {
+// ParseAST will parse all to files in folder. It skips test files.
+func (s *Representation) ParseAST() (map[string]*ast.Package, error) {
+	pkgs, _, err := astrav.Parse(s.fSet, s.root, s.dir, func(info os.FileInfo) bool {
 		return !strings.HasSuffix(info.Name(), "_test.go") && info.Name() != "embed.go"
 	}, parser.AllErrors)
 	if err != nil {
@@ -53,20 +61,19 @@ func (s *Representation) ParseFolder() (map[string]*ast.Package, error) {
 	}
 
 	for name, pkg := range pkgs {
-		s.Pkgs[name] = pkg
+		s.pkgs[name] = pkg
 	}
 
-	if s.Pkg, err = s.ParseInfo(s.dir, s.FSet, s.getFiles()); err != nil {
+	if s.typesPkg, err = s.parseInfo(s.dir, s.fSet, s.getFiles()); err != nil {
 		return nil, err
 	}
 
-	return s.Pkgs, nil
+	return s.pkgs, nil
 }
 
-// ParseInfo parses all files for type information which is then available
-// from the Nodes. When using Representation.ParseFolder, this is done automatically.
-func (s *Representation) ParseInfo(path string, fSet *token.FileSet, files []*ast.File) (*types.Package, error) {
-	s.Info = &types.Info{
+// parseInfo parses all files for type information which is then available from the Nodes.
+func (s *Representation) parseInfo(path string, fSet *token.FileSet, files []*ast.File) (*types.Package, error) {
+	s.info = &types.Info{
 		Types:      map[ast.Expr]types.TypeAndValue{},
 		Defs:       map[*ast.Ident]types.Object{},
 		Uses:       map[*ast.Ident]types.Object{},
@@ -78,7 +85,7 @@ func (s *Representation) ParseInfo(path string, fSet *token.FileSet, files []*as
 		Importer: importer.Default(),
 	}
 
-	pkg, err := conf.Check(path, fSet, files, s.Info)
+	pkg, err := conf.Check(path, fSet, files, s.info)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -86,9 +93,8 @@ func (s *Representation) ParseInfo(path string, fSet *token.FileSet, files []*as
 	return pkg, nil
 }
 
-// Package returns a package by name
-func (s *Representation) Package() *ast.Package {
-	for _, pkg := range s.Pkgs {
+func (s *Representation) getPackage() *ast.Package {
+	for _, pkg := range s.pkgs {
 		return pkg
 	}
 	return nil
@@ -96,7 +102,7 @@ func (s *Representation) Package() *ast.Package {
 
 func (s *Representation) getFiles() []*ast.File {
 	var files []*ast.File
-	for _, pkg := range s.Pkgs {
+	for _, pkg := range s.pkgs {
 		for _, file := range pkg.Files {
 			files = append(files, file)
 		}
@@ -116,9 +122,9 @@ func (s *Representation) getType(node ast.Node) types.Type {
 }
 
 func (s *Representation) getIdentType(ident *ast.Ident) types.Type {
-	obj := s.Info.ObjectOf(ident)
+	obj := s.info.ObjectOf(ident)
 	if obj == nil {
 		return nil
 	}
-	return s.Info.ObjectOf(ident).Type()
+	return s.info.ObjectOf(ident).Type()
 }

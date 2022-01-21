@@ -1,0 +1,26 @@
+package raindrops
+
+func PLACEHOLDER_1(PLACEHOLDER_2, PLACEHOLDER_3 int) bool {
+	return PLACEHOLDER_2%PLACEHOLDER_3 == 0
+}
+
+import (
+	"strconv"
+)
+
+func PLACEHOLDER_4(PLACEHOLDER_5 int) string {
+	var PLACEHOLDER_6 string
+	if PLACEHOLDER_1(PLACEHOLDER_5, 3) {
+		PLACEHOLDER_6 += "Pling"
+	}
+	if PLACEHOLDER_1(PLACEHOLDER_5, 5) {
+		PLACEHOLDER_6 += "Plang"
+	}
+	if PLACEHOLDER_1(PLACEHOLDER_5, 7) {
+		PLACEHOLDER_6 += "Plong"
+	}
+	if PLACEHOLDER_6 == "" {
+		return strconv.Itoa(PLACEHOLDER_5)
+	}
+	return PLACEHOLDER_6
+}
