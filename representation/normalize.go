@@ -24,6 +24,8 @@ func (s *Representation) normalize(pkg *ast.Package) *ast.Package {
 	f := ast.MergePackageFiles(pkg, ast.FilterImportDuplicates+ast.FilterUnassociatedComments)
 	pkg.Files = map[string]*ast.File{defaultFileName: f}
 
+	s.sortInFile(f)
+
 	astutil.Apply(pkg, func(cursor *astutil.Cursor) bool {
 		node := cursor.Node()
 		if node == nil {

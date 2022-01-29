@@ -21,7 +21,13 @@ var speech = []struct {
 	modulo int
 	sound  string
 }{
-	{modulo: 3, sound: "Pling"},
-	{modulo: 5, sound: "Plang"},
-	{modulo: 7, sound: "Plong"},
+	{modulo: 3, sound: pling},
+	{modulo: 5, sound: plang},
+	{modulo: 7, sound: plong},
 }
+
+const (
+	pling = "Pling"
+	plang = "Plang"
+	plong = "Plong"
+)
