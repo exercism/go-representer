@@ -10,6 +10,7 @@ import (
 // The order of the constants defines the sorting order in the representation.
 const (
 	typeImport = iota + 1
+	typeType
 	typeConst
 	typeVar
 	typeFunc
@@ -17,6 +18,7 @@ const (
 
 var declTypes = map[string]int{
 	"import":        typeImport,
+	"type":          typeType,
 	"const":         typeConst,
 	"var":           typeVar,
 	"*ast.FuncDecl": typeFunc,
