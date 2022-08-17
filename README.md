@@ -25,6 +25,12 @@ With the binary built above:
 represent two-fer ./representer/testdata/two-fer/1/ ./
 ```
 
-## Current State
+## Current Normalizations
 
-Basic representer implemented.
+The basic normalizations recommended in the [docs](https://exercism.org/docs/building/tooling/representers/normalization) are implemented.
+
+* Use placeholders for variable names
+* Remove comments
+* Apply standard formatting
+* Consolidate multiple files
+* Sort top level declarations (imports, types, constants, variables, functions)
