@@ -34,3 +34,7 @@ The basic normalizations recommended in the [docs](https://exercism.org/docs/bui
 * Apply standard formatting
 * Consolidate multiple files
 * Sort top level declarations (imports, types, constants, variables, functions)
+
+## Batch Analysis
+
+See [Batch Analysis README](https://github.com/exercism/go-representer/blob/main/script/README.md) for information on how to run the representer on a bigger data set.
