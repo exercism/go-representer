@@ -3,7 +3,7 @@ package raindrops
 import "strconv"
 
 func PLACEHOLDER_1(PLACEHOLDER_2 int) string {
-	var PLACEHOLDER_3 string
+	PLACEHOLDER_3 := ""
 	if PLACEHOLDER_2%3 == 0 {
 		PLACEHOLDER_3 += "Pling"
 	}

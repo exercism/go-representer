@@ -4,6 +4,10 @@ import (
 	"strings"
 	"testing"
 
+	declarations1 "github.com/exercism/go-representer/testdata/declarations/1"
+	declarations2 "github.com/exercism/go-representer/testdata/declarations/2"
+	declarations3 "github.com/exercism/go-representer/testdata/declarations/3"
+	declarations4 "github.com/exercism/go-representer/testdata/declarations/4"
 	hamming1 "github.com/exercism/go-representer/testdata/hamming/1"
 	hamming2 "github.com/exercism/go-representer/testdata/hamming/2"
 	hamming3 "github.com/exercism/go-representer/testdata/hamming/3"
@@ -91,6 +95,26 @@ func TestExtract(t *testing.T) {
 			path:        "testdata/raindrops/7",
 			wantRepr:    raindrops7.Representation,
 			wantMapping: raindrops7.Mapping,
+		},
+		{
+			path:        "testdata/declarations/1",
+			wantRepr:    declarations1.Representation,
+			wantMapping: declarations1.Mapping,
+		},
+		{
+			path:        "testdata/declarations/2",
+			wantRepr:    declarations2.Representation,
+			wantMapping: declarations2.Mapping,
+		},
+		{
+			path:        "testdata/declarations/3",
+			wantRepr:    declarations3.Representation,
+			wantMapping: declarations3.Mapping,
+		},
+		{
+			path:        "testdata/declarations/4",
+			wantRepr:    declarations4.Representation,
+			wantMapping: declarations4.Mapping,
 		},
 	}
 	for _, tt := range tests {
