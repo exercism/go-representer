@@ -15,11 +15,6 @@ func (s *Representation) normalizeDeclarations(pkg *ast.Package) {
 		if node == nil {
 			return true
 		}
-		var (
-			a    = "abc"
-			b, c = 1, "cde"
-		)
-		_, _, _ = a, b, c
 
 		switch n := node.(type) {
 		default:
