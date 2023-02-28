@@ -5,7 +5,7 @@ import "strconv"
 var PLACEHOLDER_1 = map[int]string{3: "Pling", 5: "Plang", 7: "Plong"}
 
 func PLACEHOLDER_2(PLACEHOLDER_3 int) string {
-	var PLACEHOLDER_4 string
+	PLACEHOLDER_4 := ""
 	for _, PLACEHOLDER_5 := range []int{3, 5, 7} {
 		if PLACEHOLDER_3%PLACEHOLDER_5 == 0 {
 			PLACEHOLDER_4 += PLACEHOLDER_1[PLACEHOLDER_5]

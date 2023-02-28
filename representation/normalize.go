@@ -15,17 +15,20 @@ func (s *Representation) Normalize() error {
 		return errors.New("no Go package found")
 	}
 
-	pkg = s.normalize(pkg)
+	f := ast.MergePackageFiles(pkg, ast.FilterImportDuplicates+ast.FilterUnassociatedComments)
+	pkg.Files = map[string]*ast.File{defaultFileName: f}
+
+	// register additional normalizations here
+	s.normalizeDeclarations(pkg)
+
+	s.sortInFile(f)
+	s.normalizeNaming(pkg)
+
 	s.represent = pkg
 	return nil
 }
 
-func (s *Representation) normalize(pkg *ast.Package) *ast.Package {
-	f := ast.MergePackageFiles(pkg, ast.FilterImportDuplicates+ast.FilterUnassociatedComments)
-	pkg.Files = map[string]*ast.File{defaultFileName: f}
-
-	s.sortInFile(f)
-
+func (s *Representation) normalizeNaming(pkg *ast.Package) {
 	astutil.Apply(pkg, func(cursor *astutil.Cursor) bool {
 		node := cursor.Node()
 		if node == nil {
@@ -33,13 +36,14 @@ func (s *Representation) normalize(pkg *ast.Package) *ast.Package {
 		}
 
 		s.collectImport(node)
-		s.rename(node, cursor)
+		s.rename(cursor)
 		return true
 	}, nil)
-	return pkg
 }
 
-func (s *Representation) rename(node ast.Node, cursor *astutil.Cursor) {
+func (s *Representation) rename(cursor *astutil.Cursor) {
+	node := cursor.Node()
+
 	switch n := node.(type) {
 	default:
 		return

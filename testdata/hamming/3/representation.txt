@@ -5,10 +5,8 @@ import (
 )
 
 func PLACEHOLDER_1(PLACEHOLDER_2, PLACEHOLDER_3 string) (int, error) {
-	var (
-		PLACEHOLDER_4	= []rune(PLACEHOLDER_2)
-		PLACEHOLDER_5	= []rune(PLACEHOLDER_3)
-	)
+	PLACEHOLDER_4 := []rune(PLACEHOLDER_2)
+	PLACEHOLDER_5 := []rune(PLACEHOLDER_3)
 	if len(PLACEHOLDER_4) != len(PLACEHOLDER_5) {
 		return 0, errors.New("mismatch length strings not accepted")
 	}
