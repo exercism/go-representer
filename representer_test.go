@@ -3,6 +3,7 @@ package representer
 import (
 	"strings"
 	"testing"
+	"runtime"
 
 	declarations1 "github.com/exercism/go-representer/testdata/declarations/1"
 	declarations2 "github.com/exercism/go-representer/testdata/declarations/2"
@@ -24,6 +25,16 @@ import (
 	"github.com/matryer/is"
 	"github.com/stretchr/testify/assert"
 )
+
+func sanitizeResult(s string) string {
+	result := s
+
+	if runtime.GOOS == "windows" {
+		result = strings.ReplaceAll(result, "\r\n", "\n")
+	}
+
+	return result
+}
 
 func TestExtract(t *testing.T) {
 	tests := []struct {
@@ -123,8 +134,8 @@ func TestExtract(t *testing.T) {
 			repr, mapping, err := Extract(tt.path)
 			asrt.NoErr(err)
 
-			assert.Equal(t, string(tt.wantRepr), string(repr))
-			assert.Equal(t, string(tt.wantMapping), string(mapping))
+			assert.Equal(t, sanitizeResult(string(tt.wantRepr)), sanitizeResult(string(repr)))
+			assert.Equal(t, sanitizeResult(string(tt.wantMapping)), sanitizeResult(string(mapping)))
 		})
 	}
 }

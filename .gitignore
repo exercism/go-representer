@@ -1,3 +1,5 @@
 vendor
 represent
 *.exe
+testdata/**/*/mapping.json
+testdata/**/*/representation.txt

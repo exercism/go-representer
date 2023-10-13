@@ -13,10 +13,6 @@ COPY ./go.mod /go-representer/go.mod
 # download dependencies
 RUN go mod download
 
-# Create run.sh
-RUN printf '%s\n' '#!/bin/sh' '/opt/representer/bin/representer "$@"' > /go/bin/run.sh
-RUN chmod +x /go/bin/run.sh
-
 # get the rest of the source code
 COPY . /go-representer
 
@@ -31,6 +27,8 @@ FROM golang:1.20.1-alpine3.17
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /go/bin /opt/representer/bin
+COPY bin/run.sh /opt/representer/bin/
+
 USER appuser
 WORKDIR /opt/representer
 ENTRYPOINT ["/opt/representer/bin/run.sh"]
