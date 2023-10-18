@@ -38,7 +38,7 @@ jobs:
           context: .
           push: false
           load: true
-          tags: exercism/go-test-runner
+          tags: exercism/go-representer
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
