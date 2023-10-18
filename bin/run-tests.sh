@@ -18,11 +18,14 @@ filenames="representation.txt mapping.json"
 for test_dir in testdata/*/*; do
     test_dir_name=$(basename "${test_dir}")
     test_dir_path=$(realpath "${test_dir}")
+    output_dir_path="/tmp/${test_dir_name}"
 
-    bin/run.sh "${test_dir_name}" "${test_dir_path}" "${test_dir_path}"
+    mkdir -p "${output_dir_path}"
+
+    bin/run.sh "${test_dir_name}" "${test_dir_path}" "${output_dir_path}"
 
     for filename in $filenames; do
-        actual_filepath="${test_dir_path}/${filename}"
+        actual_filepath="${output_dir_path}/${filename}"
         expected_filepath="${test_dir_path}/expected_${filename}"
         
         echo "${test_dir_name}: comparing ${filename} to expected_${filename}"
