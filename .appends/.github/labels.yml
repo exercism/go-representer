@@ -38,3 +38,7 @@
 - name: "wontfix"
   description: "This will not be worked on"
   color: "ffffff"
+
+- name: "hacktoberfest-accepted"
+  description: "Hacktoberfest label"
+  color: "ffa500"
