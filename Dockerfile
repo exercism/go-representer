@@ -1,4 +1,4 @@
-FROM golang:1.20.1-alpine3.17 as builder
+FROM golang:1.25.1-alpine3.22 as builder
 
 # Install SSL ca certificates
 RUN apk update && apk add git && apk add ca-certificates
@@ -12,6 +12,10 @@ COPY --chown=appuser:appuser . /opt/representer
 
 # Build and run the representer with appuser
 USER appuser
+
+# Default is 'go telemetry local' which saves telemetry locally.
+# Since data will never be uploaded, turn it off to avoid unnecessary file writes.
+RUN go telemetry off
 
 # This populates the build cache with the standard library
 # so future compilations are faster
