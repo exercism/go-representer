@@ -1,4 +1,4 @@
-RUN golang:1.25.1-alpine3.22 as builder
+FROM golang:1.25.1-alpine3.22 as builder
 
 # Install SSL ca certificates
 RUN apk update && apk add git && apk add ca-certificates
