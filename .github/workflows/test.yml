@@ -6,7 +6,7 @@ jobs:
   test:
     strategy:
       matrix:
-        platform: [ubuntu-24.04, windows-2025]
+        platform: [ubuntu-26.04, windows-2025]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Install Go
@@ -22,7 +22,7 @@ jobs:
         run: go test
 
   smoke-tests:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
